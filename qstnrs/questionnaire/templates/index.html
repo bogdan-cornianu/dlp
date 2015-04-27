@@ -1,0 +1,12 @@
+{% if questionnaire_list %}
+    List of questionnaires:
+    <ul>
+        {% for questionnaire in questionnaire_list %}
+            <li>
+                <a href="/qstnrs/{{ questionnaire.id }}/{{ questionnaire.first_page_id }}">{{ questionnaire.name }}</a> --- {{ questionnaire.description }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No Questionnaires available.</p>
+{%  endif %}

@@ -1,0 +1,32 @@
+{% if questions_list %}
+
+<form action="/polls/{{ poll.id }}/vote/" method="POST">
+{% csrf_token %}
+    <ul>
+        {% for question in questions_list %}
+        <li>
+            {{ question.question_text }}
+            <ul>
+                <select>
+                {% for answer in  question.answers.all %}
+                    <option>{{ answer }}</option>
+                {% endfor %}
+                </select>
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+<input type="submit" value="Submit" />
+</form>
+
+{% else %}
+    <p>No Questions available.</p>
+{%  endif %}
+
+{% if pages %}
+    {% for page in pages %}
+        <a style="display: inline" href="/qstnrs/{{ questionnaire_id }}/{{ page.id }}">{{ page }}</a>
+    {% endfor %}
+{% else %}
+    <p>No pages available for this questionnaire.</p>
+{%  endif %}
