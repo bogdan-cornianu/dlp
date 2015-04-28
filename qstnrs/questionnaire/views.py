@@ -6,12 +6,17 @@ from django.template import Context, loader
 def index(request):
     questionnaires = []
     for questionnaire in Questionnaire.objects.all():
+        pages = Page.objects.select_related('questionnaire_id').\
+            filter(questionnaire_id=questionnaire.id)
+
+        if len(pages) > 0:
+            first_page_id = pages[0].id
+
         questionnaires.append({
             'name': questionnaire.questionnaire_name,
             'description': questionnaire.questionnaire_description,
             'id': questionnaire.id,
-            'first_page_id': Page.objects.select_related('questionnaire_id').
-            filter(questionnaire_id=questionnaire.id)[0].id
+            'first_page_id': first_page_id
         })
     template = loader.get_template("index.html")
     context = Context({
@@ -50,5 +55,5 @@ def answers(request, questionnaire_id, page_id, question_id):
                         + " from questionnaire " + str(questionnaire_id))
 
 
-def submit_questionnaire(request, questionnaire_id):
+def submit_page(request, questionnaire_id):
     pass

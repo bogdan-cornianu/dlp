@@ -8,6 +8,9 @@ class Questionnaire(models.Model):
     def __unicode__(self):
         return self.questionnaire_name[:100]
 
+    class Meta:
+        ordering = ['questionnaire_name']
+
 
 class Page(models.Model):
     questionnaire = models.ForeignKey(Questionnaire)
@@ -34,11 +37,16 @@ class Question(models.Model):
     def __unicode__(self):
         return self.question_text[:100]
 
+    class Meta:
+        ordering = ['question_order']
+
 
 class Result(models.Model):
+    session_id = models.CharField(max_length=64)
     questionnaire = models.ForeignKey(Questionnaire)
-    result_text = models.CharField(max_length=200)
-    result_upper_limit = models.IntegerField()
+    page = models.ForeignKey(Page)
+    question = models.ForeignKey(Question)
+    answer = models.ForeignKey(Answer)
 
     def __unicode__(self):
-        return self.result_text[:100]
+        return "Result " + str(self.id) + " Score:" + str(self.score)
