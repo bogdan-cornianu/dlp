@@ -1,6 +1,6 @@
 from questionnaire.models import Questionnaire, Question, Page
 from django.http import HttpResponse
-from django.template import Context, loader
+from django.shortcuts import render
 
 
 def index(request):
@@ -18,34 +18,23 @@ def index(request):
             'id': questionnaire.id,
             'first_page_id': first_page_id
         })
-    template = loader.get_template("index.html")
-    context = Context({
-        "questionnaire_list": questionnaires
-    })
-    return HttpResponse(template.render(context))
+    return render(request, "index.html",
+                  {"questionnaire_list": questionnaires})
 
 
 def pages(request, questionnaire_id):
     pages_list = Page.objects.filter(questionnaire_id=questionnaire_id)
-    template = loader.get_template("pages.html")
-    context = Context({
-        "pages": pages_list,
-        "questionnaire_id": questionnaire_id
-    })
-    return HttpResponse(template.render(context))
+    return render(request, "pages.html",
+                  {"pages": pages_list, "questionnaire_id": questionnaire_id})
 
 
 def questions(request, questionnaire_id, page_id):
     questions = Question.objects.\
                     select_related('questionnaire_id').filter(page_id=page_id)
     pages_list = Page.objects.filter(questionnaire_id=questionnaire_id)
-    template = loader.get_template("questions.html")
-    context = Context({
-        "questions_list": questions,
-        "pages": pages_list,
-        "questionnaire_id": questionnaire_id
-    })
-    return HttpResponse(template.render(context))
+    return render(request, "questions.html",
+                  {"questions_list": questions, "pages": pages_list,
+                   "questionnaire_id": questionnaire_id})
 
 
 def answers(request, questionnaire_id, page_id, question_id):
