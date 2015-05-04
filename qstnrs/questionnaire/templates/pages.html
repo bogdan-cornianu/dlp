@@ -1,7 +1,0 @@
-{% if pages %}
-    {% for page in pages %}
-        <a style="display: inline" href="/qstnrs/{{ questionnaire_id }}/{{ page.id }}">{{ page }}</a>
-    {% endfor %}
-{% else %}
-    <p>No pages available for this questionnaire.</p>
-{%  endif %}

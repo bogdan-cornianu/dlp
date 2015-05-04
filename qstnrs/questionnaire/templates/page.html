@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Questionnaire{% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+
+<form action="" method="post">
+    <table>
+        {{ form.as_table }}
+    </table>
+{% csrf_token %}
+
+{% if previous_page_index > 0 %}
+    <input type="submit" name="previousPage" value="Previous Page" />
+{% endif %}
+
+{% if next_page_index != -1 %}
+    <input type="submit" name="nextPage" value="Next Page" />
+{% else %}
+<input type="submit" name="viewResults" value="View Results" />
+{% endif %}
+</form>
+
+{% endblock %}

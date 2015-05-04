@@ -1,12 +1,16 @@
-{% if questionnaire_list %}
+{% extends "base.html" %}
+
+{% block title %}Questionnaire List{% endblock %}
+
+{% block content %}
     List of questionnaires:
     <ul>
         {% for questionnaire in questionnaire_list %}
             <li>
                 <a href="/qstnrs/{{ questionnaire.id }}/{{ questionnaire.first_page_id }}">{{ questionnaire.name }}</a> --- {{ questionnaire.description }}
             </li>
+        {% empty %}
+            <p>No Questionnaires available.</p>
         {% endfor %}
     </ul>
-{% else %}
-    <p>No Questionnaires available.</p>
-{%  endif %}
+{% endblock %}

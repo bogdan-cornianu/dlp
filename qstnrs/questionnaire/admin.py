@@ -18,22 +18,19 @@ class PageAdmin(admin.ModelAdmin):
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('question_text', 'page', 'question_order')
-    fields = ('question_text', 'question_order', 'page', 'answers')
+    fields = ('question_text', 'question_order', 'page')
     search_fields = ('question_text',)
-    filter_horizontal = ('answers',)
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ('answer_text', 'answer_score')
-    search_fields = ('answer_text',)
+    list_display = ('answer_text', 'question', 'answer_score')
+    search_fields = ('answer_text', 'question')
     list_filter = ('answer_score',)
 
 
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('questionnaire', 'page', 'question', 'answer',
-                    'session_id')
-    search_fields = ('questionnaire', 'page', 'question', 'answer',
-                    'session_id')
+    list_display = ('questionnaire', 'lower_limit', 'upper_limit')
+    search_fields = ('questionnaire',)
 
 
 admin.site.register(Questionnaire, QuestionnaireAdmin)
