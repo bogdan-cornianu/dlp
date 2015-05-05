@@ -29,8 +29,9 @@ class AnswerAdmin(admin.ModelAdmin):
 
 
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('questionnaire', 'lower_limit', 'upper_limit')
-    search_fields = ('questionnaire',)
+    list_display = ('description', 'questionnaire', 'lower_limit',
+                    'upper_limit')
+    search_fields = ('description', 'questionnaire')
 
 
 admin.site.register(Questionnaire, QuestionnaireAdmin)

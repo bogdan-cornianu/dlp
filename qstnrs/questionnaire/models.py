@@ -49,4 +49,4 @@ class Result(models.Model):
     upper_limit = models.IntegerField()
 
     def __unicode__(self):
-        return "Result " + str(self.id) + " Score:" + str(self.score)
+        return self.description

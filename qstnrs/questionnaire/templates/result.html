@@ -3,9 +3,41 @@
 {% block title %}Questionnaire Result{% endblock %}
 
 {% block extrainfo %}
-Your result:
+Your result: {{ score }} <br>
+Your score puts you in the following categories: <br>
+<ul>
+    {% for category in categories %}
+        <li>{{ category }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}
 
 {% block content %}
-Different answers:
+{% if different_score > score %}
+For a better score you should have selected: <br>
+<ul>
+    {% for choice in different_choices %}
+        {% for question_text, answer_list in choice.items %}
+            Question: {{ question_text }}
+            {% for answer in answer_list %}
+                Answer: {{ answer }}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</ul>
+{% elif different_score < score %}
+For a worse score you should have selected: <br>
+<ul>
+    {% for choice in different_choices %}
+        {% for question_text, answer_list in choice.items %}
+            Question: {{ question_text }}
+            {% for answer in answer_list %}
+                Answer: {{ answer }}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</ul>
+{% else %}
+You could not have done better or worse.
+{% endif %}
 {% endblock %}

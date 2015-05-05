@@ -11,14 +11,14 @@
     </table>
 {% csrf_token %}
 
-{% if previous_page_index > 0 %}
+{% if previous_page_id > 0 %}
     <input type="submit" name="previousPage" value="Previous Page" />
 {% endif %}
 
-{% if next_page_index != -1 %}
+{% if next_page_id != -1 %}
     <input type="submit" name="nextPage" value="Next Page" />
 {% else %}
-<input type="submit" name="viewResults" value="View Results" />
+    <input type="submit" name="viewResults" value="View Results" />
 {% endif %}
 </form>
 
