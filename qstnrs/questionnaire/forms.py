@@ -8,7 +8,7 @@ class PageForm(forms.Form):
 
         for question in page.question_set.all():
             answers = [(answer.id, answer.answer_text) for
-                        answer in question.answer_set.all()]
+                       answer in question.answer_set.all()]
             field_key = 'question_%s' % question.id
             self.fields[field_key] = forms.MultipleChoiceField(choices=answers,
-                                    label=question.question_text)
+                                                  label=question.question_text)
