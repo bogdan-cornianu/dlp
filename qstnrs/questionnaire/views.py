@@ -1,6 +1,7 @@
 from questionnaire.models import *
 from questionnaire.forms import PageForm
-from questionnaire.utils import get_score_for, get_categories_for_score
+from questionnaire.utils import get_score_for, get_categories_for_score,\
+                                get_minimal_better
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -46,9 +47,9 @@ def page(request, questionnaire_id, page_id):
     if request.method == 'POST':
         form = PageForm(request.POST, page=current_page)
         if form.is_valid():
-            if 'answers' not in request.session:
-                request.session['answers'] = []
-            request.session['answers'] += [int(id)
+            if 'choices' not in request.session:
+                request.session['choices'] = []
+            request.session['choices'] += [int(id)
                                         for value in form.cleaned_data.values()
                                         for id in value]
 
@@ -74,14 +75,16 @@ def page(request, questionnaire_id, page_id):
 
 
 def result(request, questionnaire_id):
-    user_score = get_score_for(request.session['answers'])
+    user_choices = request.session['choices']
+    user_score = get_score_for(user_choices)
     # questionnaire_score = get_score_for(questionnaire_id,
     #                                     request.session['pages'])
     score_categories = get_categories_for_score(user_score, questionnaire_id)
     # different_score, different_choices = compute_result(questionnaire_id,
     #                                                 request.session['pages'])
+    get_minimal_better(int(questionnaire_id), map(int, user_choices))
 
-    del request.session['answers']
+    del request.session['choices']
     return render(request, "result.html", {
             "score": user_score,
             "categories": score_categories,
