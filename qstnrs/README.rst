@@ -17,3 +17,7 @@ Quick start
     http://127.0.0.1:8000/admin to manage questionnaires
 
 5. Access http://127.0.0.1:8000/qstnrs/ to view a list of available questionnaires
+
+
+-- Dump data from production to test db --
+python manage.py dumpdata --natural --exclude auth.permission --exclude contenttypes --indent 4
