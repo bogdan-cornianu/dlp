@@ -4,12 +4,16 @@
 
 {% block extrainfo %}
 Your score: {{ score }} <br>
+{% if categories %}
 Your score puts you in the following categories: <br>
 <ul>
     {% for category in categories %}
         <li>{{ category }}</li>
     {% endfor %}
 </ul>
+{% else %}
+There are no categories to match your score.
+{% endif %}
 {% endblock %}
 
 {% block content %}

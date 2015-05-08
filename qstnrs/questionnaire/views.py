@@ -77,7 +77,6 @@ def page(request, questionnaire_id, page_id):
 def result(request, questionnaire_id):
     user_choices = request.session['choices']
     user_score = get_score_for(user_choices)
-
     score_categories = get_categories_for_score(user_score, questionnaire_id)
 
     minimal_better = get_minimal_better(int(questionnaire_id),

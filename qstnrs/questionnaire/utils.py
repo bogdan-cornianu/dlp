@@ -1,4 +1,4 @@
-from questionnaire.models import Answer, Result, Question
+from questionnaire.models import Answer, Result
 
 
 def get_score_for(user_choices):
@@ -23,7 +23,7 @@ def get_minimal_better(questionnaire_id, user_choices):
     unselected_choices = sorted([a for a in available_answers
                                  if a.answer_score > 0
                                  and a.id not in user_choices],
-                                 key=lambda a: a.answer_score)
+                                key=lambda a: a.answer_score)
 
     return select_optimal_answers(questionnaire_id, user_choices,
                                   unselected_choices,
@@ -38,7 +38,7 @@ def get_minimal_worse(questionnaire_id, user_choices):
     unselected_choices = sorted([a for a in available_answers
                                  if a.answer_score < 0
                                  and a.id not in user_choices],
-                                 key=lambda a: a.answer_score)
+                                key=lambda a: a.answer_score)
 
     return select_optimal_answers(questionnaire_id, user_choices,
                                   unselected_choices,
@@ -51,18 +51,20 @@ def select_optimal_answers(questionnaire_id, user_choices,
     user_categories = get_categories_for_score(user_score, questionnaire_id)
 
     possible_answers = []
-    limit = get_closest_limit(user_categories, user_score, better)
-    gap = abs(limit - user_score)
+    if user_categories:
+        limit = get_closest_limit(user_categories, user_score, better)
+        gap = abs(limit - user_score)
 
-    for choice in unselected_choices:
-        if gap > 0:
-            if not on_same_page(choice, possible_answers):
-                possible_answers.append(choice)
-                gap -= abs(choice.answer_score)
-        else:
-            break
+        for choice in unselected_choices:
+            if gap > 0:
+                if not on_same_page(choice, possible_answers):
+                    possible_answers.append(choice)
+                    gap -= abs(choice.answer_score)
+            else:
+                break
 
-    return get_improvements(possible_answers, better)
+        return get_improvements(possible_answers, better)
+    return None
 
 
 def get_closest_limit(categories, user_score, better):
@@ -75,7 +77,7 @@ def get_closest_limit(categories, user_score, better):
             if c.upper_limit > user_score and c.upper_limit < closest_limit:
                 closest_limit = c.upper_limit
         else:
-            if c.lower_limit < user_score and c.lower_limit < closest_limit:
+            if c.lower_limit < user_score and c.lower_limit > closest_limit:
                 closest_limit = c.lower_limit
 
     return closest_limit
