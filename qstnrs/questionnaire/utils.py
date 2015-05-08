@@ -53,7 +53,10 @@ def select_optimal_answers(questionnaire_id, user_choices,
     possible_answers = []
     if user_categories:
         limit = get_closest_limit(user_categories, user_score, better)
-        gap = abs(limit - user_score)
+        if better:
+            gap = limit - user_score
+        else:
+            gap = user_score - limit
 
         for choice in unselected_choices:
             if gap > 0:

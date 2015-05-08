@@ -84,6 +84,12 @@ def result(request, questionnaire_id):
     minimal_worse = get_minimal_worse(int(questionnaire_id),
                                       map(int, user_choices))
 
+    # user_choices = [2, 5, 10, 14, 17, 20, 23, 27]
+    # unselected_choices = [1, 3, 4, 6, 7, 8, 9, 11, 12, 13, 15, 16, 18,
+    #                                19, 21, 22, 24, 25, 26]
+    # unselected = Answer.objects.filter(id__in=unselected_choices)
+    # print 'worse: ',select_optimal_answers(1, user_choices, unselected, better=False)
+
     del request.session['choices']
     return render(request, "result.html", {
             "score": user_score,

@@ -11,7 +11,7 @@ class UtilsTest(TestCase):
         self.unselected_choices = [1, 3, 4, 6, 7, 8, 9, 11, 12, 13, 15, 16, 18,
                                    19, 21, 22, 24, 25, 26]
 
-    def test_get_score(self):
+    def test_get_score_for(self):
         score = get_score_for(self.user_choices)
         self.assertEqual(score, 7)
 
@@ -39,9 +39,9 @@ class UtilsTest(TestCase):
 
         self.assertEqual(minimal_worse, expected)
 
+    # gives wrong results
     def test_select_optimal_answers(self):
-        unselected = [answer for answer in Answer.objects.all()
-                      if answer.id in self.unselected_choices]
+        unselected = Answer.objects.filter(id__in=self.unselected_choices)
 
         optimal_answers_better = select_optimal_answers(1, self.user_choices,
                                                         unselected,
@@ -69,7 +69,7 @@ class UtilsTest(TestCase):
         answers_on_same_page = Answer.objects.filter(id__in=[22, 23, 24, 13,
                                                      14, 15])
         answers_not_same_page = Answer.objects.filter(id__in=[4, 5, 6, 7,
-                                                     8, 9])
+                                                      8, 9])
         answers_same_page_same_question = Answer.objects.filter(id__in=[2, 3])
 
         result_same_page = on_same_page(answer_bogdan, answers_on_same_page)
@@ -78,6 +78,6 @@ class UtilsTest(TestCase):
         result_same_page_same_question = on_same_page(answer_bogdan,
                                                answers_same_page_same_question)
 
-        self.assertEqual(result_same_page, True)
-        self.assertEqual(result_not_same_page, False)
-        self.assertEqual(result_same_page_same_question, False)
+        self.assertTrue(result_same_page)
+        self.assertFalse(result_not_same_page)
+        self.assertFalse(result_same_page_same_question)
