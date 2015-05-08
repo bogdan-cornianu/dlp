@@ -1,7 +1,7 @@
 from questionnaire.models import *
 from questionnaire.forms import PageForm
 from questionnaire.utils import get_score_for, get_categories_for_score,\
-                                get_minimal_better
+                                get_minimal_better, get_minimal_worse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -77,17 +77,18 @@ def page(request, questionnaire_id, page_id):
 def result(request, questionnaire_id):
     user_choices = request.session['choices']
     user_score = get_score_for(user_choices)
-    # questionnaire_score = get_score_for(questionnaire_id,
-    #                                     request.session['pages'])
+
     score_categories = get_categories_for_score(user_score, questionnaire_id)
-    # different_score, different_choices = compute_result(questionnaire_id,
-    #                                                 request.session['pages'])
-    get_minimal_better(int(questionnaire_id), map(int, user_choices))
+
+    minimal_better = get_minimal_better(int(questionnaire_id),
+                                        map(int, user_choices))
+    minimal_worse = get_minimal_worse(int(questionnaire_id),
+                                      map(int, user_choices))
 
     del request.session['choices']
     return render(request, "result.html", {
             "score": user_score,
             "categories": score_categories,
-            # "different_score": different_score,
-            # "different_choices": different_choices
+            "minimal_better": minimal_better,
+            "minimal_worse": minimal_worse
     })
