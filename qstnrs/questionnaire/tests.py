@@ -26,8 +26,7 @@ class UtilsTest(TestCase):
     def test_get_minimal_better(self):
         # get minimal better for questionnaire with id = 1
         minimal_better = get_minimal_better(1, self.user_choices)
-        expected = {"What's your name?": ['Ion'],
-                    'What flowers do you like?': ['Azalea']}
+        expected = {"What's your name?": ['Ion']}
         self.assertEqual(minimal_better, expected)
 
     def test_get_minimal_worse(self):
@@ -39,22 +38,33 @@ class UtilsTest(TestCase):
 
         self.assertEqual(minimal_worse, expected)
 
-    # gives wrong results
     def test_select_optimal_answers(self):
-        unselected = Answer.objects.filter(id__in=self.unselected_choices)
+        available_answers = answers_for_questionnaire(1)
 
-        optimal_answers_better = select_optimal_answers(1, self.user_choices,
-                                                        unselected,
-                                                        better=True)
-        optimal_answers_worse = select_optimal_answers(1, self.user_choices,
-                                                       unselected,
-                                                       better=False)
+        unselected_better = sorted([a for a in available_answers
+                                    if a.answer_score > 0
+                                    and a.id not in self.user_choices],
+                                   key=lambda a: a.answer_score, reverse=True)
 
-        expected_optimal_better = {"What's your name?": ['Bogdan']}
-        expected_optimal_worse = {"What's your name?": ['Bogdan', 'Ion']}
+        unselected_worse = sorted([a for a in available_answers
+                                   if a.answer_score < 0
+                                   and a.id not in self.user_choices],
+                                  key=lambda a: a.answer_score)
 
-        self.assertEqual(optimal_answers_better, expected_optimal_better)
-        self.assertEqual(optimal_answers_worse, expected_optimal_worse)
+        optimal_better = select_optimal_answers(1, self.user_choices,
+                                                unselected_better,
+                                                better=True)
+        optimal_worse = select_optimal_answers(1, self.user_choices,
+                                               unselected_worse,
+                                               better=False)
+
+        expected_better = {"What's your name?": ['Ion']}
+        expected_worse = {'Where do you go for lunch?': ['Iulius Mall'],
+                          "What's your age?": ['87'],
+                          'What animals do you like?': ['Cats']}
+
+        self.assertEqual(optimal_better, expected_better)
+        self.assertEqual(optimal_worse, expected_worse)
 
     def test_get_closest_limit(self):
         categories = Result.objects.filter(questionnaire_id=1)
