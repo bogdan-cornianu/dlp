@@ -13,39 +13,33 @@ Your score puts you in the following categories: <br>
 {% endblock %}
 
 {% block content %}
-{% if different_choices %}
-    {% if different_score > score %}
-        For a better score you should have selected: </br>
-        {% for choice in different_choices %}
-            {% for question_text, answer_list in choice.items %}
-                    Question: {{ question_text }}
-                    <ul>
-                    {% for answer in answer_list %}
-                        <li class="answer">
-                        Answer: {{ answer }}
-                        </li>
-                    {% endfor %}
-                    </ul>
-            {% endfor %}
-        {% endfor %}
-    {% elif different_score < score %}
-        For a worse score you should have selected: <br>
-        {% for choice in different_choices %}
-            {% for question_text, answer_list in choice.items %}
-                    Question: {{ question_text }}
-                     <ul>
-                    {% for answer in answer_list %}
-                        <li class="answer">
-                        Answer: {{ answer }}
-                        </li>
-                    {% endfor %}
-                    </ul>
-            {% endfor %}
-        {% endfor %}
-    {% else %}
-        You could not have done better or worse.
-    {% endif %}
-{% else %}
+{% if minimal_better %}
+For an improved score you could have selected: </br>
+{% for question_text, answer_list in minimal_better.items %}
+    Question: {{ question_text }}
+    <ul>
+    {% for answer in answer_list %}
+        <li class="answer">
+        Answer: {{ answer }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+{% endif %}
+{% if minimal_worse %}
+For a worse score you could have selected: <br>
+{% for question_text, answer_list in minimal_worse.items %}
+    Question: {{ question_text }}
+     <ul>
+    {% for answer in answer_list %}
+        <li class="answer">
+        Answer: {{ answer }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+{% endif %}
+{% if not minimal_better and not minimal_worse %}
     No extra selections possible.
 {% endif %}
 {% endblock %}
