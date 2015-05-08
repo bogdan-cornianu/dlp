@@ -23,7 +23,7 @@ def get_minimal_better(questionnaire_id, user_choices):
     unselected_choices = sorted([a for a in available_answers
                                  if a.answer_score > 0
                                  and a.id not in user_choices],
-                                key=lambda a: a.answer_score)
+                                key=lambda a: a.answer_score, reverse=True)
 
     return select_optimal_answers(questionnaire_id, user_choices,
                                   unselected_choices,
@@ -60,9 +60,14 @@ def select_optimal_answers(questionnaire_id, user_choices,
 
         for choice in unselected_choices:
             if gap > 0:
-                if not on_same_page(choice, possible_answers):
-                    possible_answers.append(choice)
-                    gap -= abs(choice.answer_score)
+                if better:
+                    if choice.answer_score < limit - user_score and not on_same_page(choice, possible_answers):
+                        possible_answers.append(choice)
+                        gap -= abs(choice.answer_score)
+                else:
+                    if choice.answer_score < user_score - limit and not on_same_page(choice, possible_answers):
+                        possible_answers.append(choice)
+                        gap -= abs(choice.answer_score)
             else:
                 break
 
