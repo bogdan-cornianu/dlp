@@ -5,12 +5,32 @@
 {% block content %}
     List of questionnaires:
     <ul>
-        {% for questionnaire in questionnaire_list %}
+        {% for questionnaire in questionnaires %}
             <li>
-                <a href="/qstnrs/{{ questionnaire.id }}/{{ questionnaire.first_page_id }}">{{ questionnaire.name }}</a> --- {{ questionnaire.description }}
+            {% if questionnaire.page_set.count > 0 %}
+                <a href="/qstnrs/{{ questionnaire.id }}/">{{ questionnaire.questionnaire_name }}</a> --- {{ questionnaire.questionnaire_description }}
+            {% else %}
+                {{ questionnaire.questionnaire_name }} --- {{ questionnaire.questionnaire_description }}
+            {% endif %}
             </li>
         {% empty %}
             <p>No Questionnaires available.</p>
         {% endfor %}
     </ul>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if questionnaires.has_previous %}
+            <a href="?page={{ questionnaires.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ questionnaires.number }} of {{ questionnaires.paginator.num_pages }}
+        </span>
+
+        {% if questionnaires.has_next %}
+            <a href="?page={{ questionnaires.next_page_number }}">Next</a>
+        {% endif %}
+    </span>
+</div>
 {% endblock %}

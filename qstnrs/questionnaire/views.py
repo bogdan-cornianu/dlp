@@ -1,37 +1,44 @@
 from questionnaire.models import *
 from questionnaire.forms import PageForm
-from questionnaire.utils import get_score_for, get_categories_for_score,\
-                                get_minimal_better, get_minimal_worse
+from questionnaire.utils import get_score_for, get_categories_for_score, \
+    get_minimal_better, get_minimal_worse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def index(request):
-    questionnaires = []
-    for questionnaire in Questionnaire.objects.all():
-        pages = Page.objects.select_related('questionnaire_id').\
-            filter(questionnaire_id=questionnaire.id).order_by('page_order')
+    paginator = Paginator(Questionnaire.objects.all(), 3)
+    questionnaire_page = request.GET.get('page')
 
-        if len(pages) > 0:
-            first_page_id = pages[0].id
+    try:
+        questionnaires = paginator.page(questionnaire_page)
+    except PageNotAnInteger:
+        questionnaires = paginator.page(1)
+    except EmptyPage:
+        questionnaires = paginator.page(paginator.num_pages)
 
-        questionnaires.append({
-            'name': questionnaire.questionnaire_name,
-            'description': questionnaire.questionnaire_description,
-            'id': questionnaire.id,
-            'page_list': [page.id for page in pages],
-            'first_page_id': first_page_id
-        })
     return render(request, "main.html",
-                  {"questionnaire_list": questionnaires})
+                  {"questionnaires": questionnaires})
+
+
+def page_without_id(request, questionnaire_id):
+    try:
+        first_page = Questionnaire.objects.get(id=questionnaire_id).page_set. \
+            all()[0].id
+        url = '/qstnrs/' + questionnaire_id + '/' + str(first_page)
+    except IndexError:
+        url = '/qstnrs/'
+
+    return HttpResponseRedirect(url)
 
 
 def page(request, questionnaire_id, page_id):
-    questions = Question.objects.\
-                    select_related('questionnaire_id').filter(page_id=page_id)
-    ordered_pages = Page.objects.filter(questionnaire_id=questionnaire_id).\
+    questions = Question.objects. \
+        select_related('questionnaire_id').filter(page_id=page_id)
+    ordered_pages = Page.objects.filter(questionnaire_id=questionnaire_id). \
         order_by('page_order')
-    page_list = [page.id for page in ordered_pages]
+    page_list = [ordered_page.id for ordered_page in ordered_pages]
 
     current_page = get_object_or_404(Page, questionnaire_id=questionnaire_id,
                                      id=page_id)
@@ -49,9 +56,10 @@ def page(request, questionnaire_id, page_id):
         if form.is_valid():
             if 'choices' not in request.session:
                 request.session['choices'] = []
-            request.session['choices'] += [int(id)
-                                        for value in form.cleaned_data.values()
-                                        for id in value]
+            request.session['choices'] += [int(choice_id)
+                                           for value in
+                                           form.cleaned_data.values()
+                                           for choice_id in value]
 
             if 'previousPage' in request.POST:
                 goto_page = previous_page_id
@@ -66,11 +74,11 @@ def page(request, questionnaire_id, page_id):
     else:
         form = PageForm(page=current_page)
     return render(request, "page.html", {
-            "form": form,
-            "questions_list": questions,
-            "previous_page_id": previous_page_id,
-            "next_page_id": next_page_id,
-            "questionnaire_id": questionnaire_id
+        "form": form,
+        "questions_list": questions,
+        "previous_page_id": previous_page_id,
+        "next_page_id": next_page_id,
+        "questionnaire_id": questionnaire_id
     })
 
 
@@ -86,8 +94,8 @@ def result(request, questionnaire_id):
 
     del request.session['choices']
     return render(request, "result.html", {
-            "score": user_score,
-            "categories": score_categories,
-            "minimal_better": minimal_better,
-            "minimal_worse": minimal_worse
+        "score": user_score,
+        "categories": score_categories,
+        "minimal_better": minimal_better,
+        "minimal_worse": minimal_worse
     })

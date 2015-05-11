@@ -17,7 +17,7 @@ class UtilsTest(TestCase):
 
     def test_get_categories_for_score(self):
         categories = get_categories_for_score(7, 1)
-        # for the first questionnaire with a score of 7, all categories should
+        # for questionnaire with id 1 and a score of 7, all categories should
         # be included
         expected_categories = Result.objects.filter(questionnaire_id=1)
         self.assertEqual([cat.id for cat in categories],
@@ -26,7 +26,7 @@ class UtilsTest(TestCase):
     def test_get_minimal_better(self):
         # get minimal better for questionnaire with id = 1
         minimal_better = get_minimal_better(1, self.user_choices)
-        expected = {"What's your name?": ['Ion']}
+        expected = {"What's your name?": ['Bogdan']}
         self.assertEqual(minimal_better, expected)
 
     def test_get_minimal_worse(self):
@@ -44,12 +44,13 @@ class UtilsTest(TestCase):
         unselected_better = sorted([a for a in available_answers
                                     if a.answer_score > 0
                                     and a.id not in self.user_choices],
-                                   key=lambda a: a.answer_score, reverse=True)
+                                   key=lambda answer: answer.answer_score,
+                                   reverse=True)
 
         unselected_worse = sorted([a for a in available_answers
                                    if a.answer_score < 0
                                    and a.id not in self.user_choices],
-                                  key=lambda a: a.answer_score)
+                                  key=lambda answer: answer.answer_score)
 
         optimal_better = select_optimal_answers(1, self.user_choices,
                                                 unselected_better,
@@ -58,7 +59,7 @@ class UtilsTest(TestCase):
                                                unselected_worse,
                                                better=False)
 
-        expected_better = {"What's your name?": ['Ion']}
+        expected_better = {"What's your name?": ['Bogdan']}
         expected_worse = {'Where do you go for lunch?': ['Iulius Mall'],
                           "What's your age?": ['87'],
                           'What animals do you like?': ['Cats']}
