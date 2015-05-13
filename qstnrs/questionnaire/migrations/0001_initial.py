@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -21,6 +21,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('questionnaire', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['questionnaire.Questionnaire'])),
             ('page_name', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('page_order', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('questionnaire', ['Page'])
 
@@ -45,9 +46,10 @@ class Migration(SchemaMigration):
         # Adding model 'Result'
         db.create_table('questionnaire_result', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('questionnaire', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['questionnaire.Questionnaire'])),
-            ('result_text', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('result_upper_limit', self.gf('django.db.models.fields.IntegerField')()),
+            ('lower_limit', self.gf('django.db.models.fields.IntegerField')()),
+            ('upper_limit', self.gf('django.db.models.fields.IntegerField')()),
         ))
         db.send_create_signal('questionnaire', ['Result'])
 
@@ -81,27 +83,29 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Page'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'page_name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'page_order': ('django.db.models.fields.IntegerField', [], {}),
             'questionnaire': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Questionnaire']"})
         },
         'questionnaire.question': {
-            'Meta': {'object_name': 'Question'},
+            'Meta': {'ordering': "['question_order']", 'object_name': 'Question'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'page': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Page']"}),
             'question_order': ('django.db.models.fields.IntegerField', [], {}),
             'question_text': ('django.db.models.fields.CharField', [], {'max_length': '250'})
         },
         'questionnaire.questionnaire': {
-            'Meta': {'object_name': 'Questionnaire'},
+            'Meta': {'ordering': "['questionnaire_name']", 'object_name': 'Questionnaire'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'questionnaire_description': ('django.db.models.fields.CharField', [], {'max_length': '400'}),
             'questionnaire_name': ('django.db.models.fields.CharField', [], {'max_length': '150'})
         },
         'questionnaire.result': {
             'Meta': {'object_name': 'Result'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'lower_limit': ('django.db.models.fields.IntegerField', [], {}),
             'questionnaire': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Questionnaire']"}),
-            'result_text': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'result_upper_limit': ('django.db.models.fields.IntegerField', [], {})
+            'upper_limit': ('django.db.models.fields.IntegerField', [], {})
         }
     }
 
