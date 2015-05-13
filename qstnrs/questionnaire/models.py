@@ -3,7 +3,9 @@ from django.db import models
 
 class Questionnaire(models.Model):
     questionnaire_name = models.CharField(max_length=150)
-    questionnaire_description = models.CharField(max_length=400)
+    questionnaire_description = models.TextField(max_length=500)
+    result_description = models.TextField(max_length=500, default="You did ok.")
+    result_upper_limit = models.IntegerField(default=0)
 
     def __unicode__(self):
         return self.questionnaire_name[:100]
@@ -40,13 +42,3 @@ class Answer(models.Model):
 
     def __unicode__(self):
         return self.answer_text
-
-
-class Result(models.Model):
-    description = models.CharField(max_length=200)
-    questionnaire = models.ForeignKey(Questionnaire)
-    lower_limit = models.IntegerField()
-    upper_limit = models.IntegerField()
-
-    def __unicode__(self):
-        return self.description

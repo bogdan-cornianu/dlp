@@ -2,12 +2,12 @@ from questionnaire.models import Questionnaire
 from questionnaire.models import Page
 from questionnaire.models import Answer
 from questionnaire.models import Question
-from questionnaire.models import Result
 from django.contrib import admin
 
 
 class QuestionnaireAdmin(admin.ModelAdmin):
-    list_display = ('questionnaire_name', 'questionnaire_description')
+    list_display = ('questionnaire_name', 'questionnaire_description',
+                    'result_description', 'result_upper_limit')
     search_fields = ('questionnaire_name', 'questionnaire_description')
 
 
@@ -27,15 +27,7 @@ class AnswerAdmin(admin.ModelAdmin):
     search_fields = ('answer_text', 'question')
     list_filter = ('answer_score',)
 
-
-class ResultAdmin(admin.ModelAdmin):
-    list_display = ('description', 'questionnaire', 'lower_limit',
-                    'upper_limit')
-    search_fields = ('description', 'questionnaire')
-
-
 admin.site.register(Questionnaire, QuestionnaireAdmin)
 admin.site.register(Page, PageAdmin)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Result, ResultAdmin)
