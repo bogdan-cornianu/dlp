@@ -3,47 +3,33 @@
 {% block title %}Questionnaire Result{% endblock %}
 
 {% block extrainfo %}
-Your score: {{ score }} <br>
-{% if categories %}
-Your score puts you in the following categories: <br>
-<ul>
-    {% for category in categories %}
-        <li>{{ category }}</li>
-    {% endfor %}
-</ul>
-{% else %}
-There are no categories to match your score.
-{% endif %}
+    Your score: {{ user_score }} <br>
+    {% if questionnaire %}
+        {{ questionnaire.result_description }}
+    {% else %}
+        You're score is greater than the upper limit of the questionnaire's result.
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-{% if minimal_better %}
-For an improved score you could have selected: </br>
-{% for question_text, answer_list in minimal_better.items %}
-    Question: {{ question_text }}
-    <ul>
-    {% for answer in answer_list %}
-        <li class="answer">
-        Answer: {{ answer }}
-        </li>
-    {% endfor %}
-    </ul>
-{% endfor %}
-{% endif %}
-{% if minimal_worse %}
-For a worse score you could have selected: <br>
-{% for question_text, answer_list in minimal_worse.items %}
-    Question: {{ question_text }}
-     <ul>
-    {% for answer in answer_list %}
-        <li class="answer">
-        Answer: {{ answer }}
-        </li>
-    {% endfor %}
-    </ul>
-{% endfor %}
-{% endif %}
-{% if not minimal_better and not minimal_worse %}
-    No extra selections possible.
-{% endif %}
+    {% if better_suggestions %}
+        For an improved score you could have selected: <br>
+        {% for answer in better_suggestions %}
+            Q: {{ answer.question.question_text }} <br>
+            A: {{ answer.answer_text }}
+        {% endfor %}
+    {% endif %}
+    {% if worse_suggestions %}
+        <br>For a worse score you could have selected: <br>
+        {% for answer in worse_suggestions %}
+            Q: {{ answer.question.question_text }} <br>
+            A: {{ answer.answer_text }}
+        {% endfor %}
+    {% endif %}
+    {% if not better_suggestions and not worse_suggestions %}
+        No extra selections possible.
+    {% endif %}
+    <footer>
+        <a href="/qstnrs/">Back to Questionnaires list</a>
+    </footer>
 {% endblock %}
