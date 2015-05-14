@@ -4,8 +4,9 @@ from questionnaire.models import Answer
 def get_score_for(user_choices):
     """Calculate the user's total score based on selected answers."""
     score = 0
+    answers = Answer.objects.all()
     for choice_id in user_choices:
-        score += Answer.objects.get(id=choice_id).answer_score
+        score += answers.get(id=choice_id).answer_score
     return score
 
 
