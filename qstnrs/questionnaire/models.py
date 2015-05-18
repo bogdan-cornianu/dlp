@@ -4,7 +4,7 @@ from django.db import models
 class Questionnaire(models.Model):
     questionnaire_name = models.CharField(max_length=150)
     questionnaire_description = models.TextField(max_length=500)
-    result_description = models.TextField(max_length=500, default="You did ok.")
+    result_description = models.TextField(max_length=500, default="You did OK")
     result_upper_limit = models.IntegerField(default=0)
 
     def __unicode__(self):
