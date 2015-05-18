@@ -268,12 +268,17 @@ def create_db(db):
     set_up(db)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def user_choices():
     return [2, 5, 10, 14, 17, 20, 23, 27]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def unselected_choices():
+    unsel_choices = []
+    uc = user_choices()
+    # for answer in Answer.objects.all():
+    #     if answer.id not in uc
+
     return [1, 3, 4, 6, 7, 8, 9, 11, 12, 13, 15, 16, 18,
             19, 21, 22, 24, 25, 26]
