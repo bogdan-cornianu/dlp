@@ -3,11 +3,8 @@ from questionnaire.models import Answer
 
 def get_score_for(user_choices):
     """Calculate the user's total score based on selected answers."""
-    score = 0
-    answers = Answer.objects.all()
-    for choice_id in user_choices:
-        score += answers.get(id=choice_id).answer_score
-    return score
+    return sum(list(Answer.objects.filter(id__in=user_choices).values_list(
+        'answer_score', flat=True)))
 
 
 def answers_for_questionnaire(questionnaire_id):
@@ -21,7 +18,7 @@ def answers_for_questionnaire(questionnaire_id):
 
 def select_optimal_answers(user_choices, unselected_choices, better):
     """Select all the answers the user could have selected for a better or
-    worse score."""
+    worse score.--add order-to-doc"""
     user_score = get_score_for(user_choices)
 
     possible_answers = []
@@ -29,15 +26,14 @@ def select_optimal_answers(user_choices, unselected_choices, better):
     for choice in unselected_choices:
         # Only consider answers from different pages or from the same page
         # and same question
-        if not on_same_page(choice, possible_answers):
-            if better and accum <= user_score:
-                possible_answers.append(choice)
-                accum += choice.answer_score
-            elif not better and accum >= user_score:
-                possible_answers.append(choice)
-                accum += choice.answer_score
-            else:
-                break
+        if on_same_page(choice, possible_answers):
+            continue
+        if better and accum <= user_score:
+            possible_answers.append(choice)
+            accum += choice.answer_score
+        elif not better and accum >= user_score:
+            possible_answers.append(choice)
+            accum += choice.answer_score
 
     return possible_answers
 
@@ -59,7 +55,6 @@ def get_suggestions_for(questionnaire_id, user_choices, better):
     # Get all the answers for the current questionnaire
     available_answers = answers_for_questionnaire(questionnaire_id)
 
-    # Only get the answers with a positive score and sort them descending
     unselected_choices = []
     for answer in available_answers:
         if better:
