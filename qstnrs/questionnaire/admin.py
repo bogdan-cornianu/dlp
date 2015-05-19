@@ -6,8 +6,7 @@ from django.contrib import admin
 
 
 class QuestionnaireAdmin(admin.ModelAdmin):
-    list_display = ('questionnaire_name', 'questionnaire_description',
-                    'result_description', 'result_upper_limit')
+    list_display = ('questionnaire_name', 'questionnaire_description')
     search_fields = ('questionnaire_name', 'questionnaire_description')
 
 
