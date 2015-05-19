@@ -1,0 +1,68 @@
+# -*- coding: utf-8 -*-
+from south.utils import datetime_utils as datetime
+from south.db import db
+from south.v2 import DataMigration
+from django.db import models
+
+class Migration(DataMigration):
+
+    def forwards(self, orm):
+        """One Questionnaire can have one or more results.
+        We're moving the result description and upper limit from the Result
+        table into the Questionnaire table in order for one Questionnaire to
+        only have one possible result. Since currently the relationship between
+        Questionnaire and Result is one to many, we're only going to get data
+        from the first result record for a given questionnaire."""
+        for questionnaire in orm.Questionnaire.objects.all():
+            result_list = questionnaire.result_set.all()
+            if len(result_list) > 0:
+                questionnaire.result_description = result_list[0].description
+                questionnaire.result_upper_limit = result_list[0].upper_limit
+                questionnaire.save()
+
+    def backwards(self, orm):
+        """Raise an error since this migration can't be reversed."""
+        raise RuntimeError("This migration can't be reversed.")
+
+    models = {
+        'questionnaire.answer': {
+            'Meta': {'object_name': 'Answer'},
+            'answer_score': ('django.db.models.fields.IntegerField', [], {}),
+            'answer_text': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'question': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Question']"})
+        },
+        'questionnaire.page': {
+            'Meta': {'object_name': 'Page'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'page_name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'page_order': ('django.db.models.fields.IntegerField', [], {}),
+            'questionnaire': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Questionnaire']"})
+        },
+        'questionnaire.question': {
+            'Meta': {'ordering': "['question_order']", 'object_name': 'Question'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'page': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Page']"}),
+            'question_order': ('django.db.models.fields.IntegerField', [], {}),
+            'question_text': ('django.db.models.fields.CharField', [], {'max_length': '250'})
+        },
+        'questionnaire.questionnaire': {
+            'Meta': {'ordering': "['questionnaire_name']", 'object_name': 'Questionnaire'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'questionnaire_description': ('django.db.models.fields.TextField', [], {'max_length': '500'}),
+            'questionnaire_name': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
+            'result_description': ('django.db.models.fields.TextField', [], {'max_length': '500', 'null': 'True'}),
+            'result_upper_limit': ('django.db.models.fields.IntegerField', [], {'null': 'True'})
+        },
+        'questionnaire.result': {
+            'Meta': {'object_name': 'Result'},
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'lower_limit': ('django.db.models.fields.IntegerField', [], {}),
+            'questionnaire': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['questionnaire.Questionnaire']"}),
+            'upper_limit': ('django.db.models.fields.IntegerField', [], {})
+        }
+    }
+
+    complete_apps = ['questionnaire']
+    symmetrical = True

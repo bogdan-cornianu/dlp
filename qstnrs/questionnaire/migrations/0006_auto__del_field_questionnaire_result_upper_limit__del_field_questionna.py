@@ -8,43 +8,24 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting model 'Result'
-        db.delete_table('questionnaire_result')
-
-        # Adding field 'Questionnaire.result_description'
-        db.add_column('questionnaire_questionnaire', 'result_description',
-                      self.gf('django.db.models.fields.TextField')(default='You did ok.', max_length=500),
-                      keep_default=False)
-
-        # Adding field 'Questionnaire.result_upper_limit'
-        db.add_column('questionnaire_questionnaire', 'result_upper_limit',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
-
-
-        # Changing field 'Questionnaire.questionnaire_description'
-        db.alter_column('questionnaire_questionnaire', 'questionnaire_description', self.gf('django.db.models.fields.TextField')(max_length=500))
-
-    def backwards(self, orm):
-        # Adding model 'Result'
-        db.create_table('questionnaire_result', (
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('upper_limit', self.gf('django.db.models.fields.IntegerField')()),
-            ('lower_limit', self.gf('django.db.models.fields.IntegerField')()),
-            ('questionnaire', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['questionnaire.Questionnaire'])),
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal('questionnaire', ['Result'])
+        # Deleting field 'Questionnaire.result_upper_limit'
+        db.delete_column('questionnaire_questionnaire', 'result_upper_limit')
 
         # Deleting field 'Questionnaire.result_description'
         db.delete_column('questionnaire_questionnaire', 'result_description')
 
-        # Deleting field 'Questionnaire.result_upper_limit'
-        db.delete_column('questionnaire_questionnaire', 'result_upper_limit')
 
+    def backwards(self, orm):
+        # Adding field 'Questionnaire.result_upper_limit'
+        db.add_column('questionnaire_questionnaire', 'result_upper_limit',
+                      self.gf('django.db.models.fields.IntegerField')(null=True),
+                      keep_default=False)
 
-        # Changing field 'Questionnaire.questionnaire_description'
-        db.alter_column('questionnaire_questionnaire', 'questionnaire_description', self.gf('django.db.models.fields.CharField')(max_length=400))
+        # Adding field 'Questionnaire.result_description'
+        db.add_column('questionnaire_questionnaire', 'result_description',
+                      self.gf('django.db.models.fields.TextField')(max_length=500, null=True),
+                      keep_default=False)
+
 
     models = {
         'questionnaire.answer': {
@@ -72,9 +53,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "['questionnaire_name']", 'object_name': 'Questionnaire'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'questionnaire_description': ('django.db.models.fields.TextField', [], {'max_length': '500'}),
-            'questionnaire_name': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
-            'result_description': ('django.db.models.fields.TextField', [], {'default': "'You did ok.'", 'max_length': '500'}),
-            'result_upper_limit': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+            'questionnaire_name': ('django.db.models.fields.CharField', [], {'max_length': '150'})
         }
     }
 
