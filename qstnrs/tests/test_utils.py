@@ -1,4 +1,6 @@
-from questionnaire.utils import *
+from questionnaire.utils import get_score_for, answers_for_questionnaire, \
+    get_suggestions_for, on_same_page
+from questionnaire.models import Answer
 import pytest
 
 
@@ -10,10 +12,11 @@ def test_get_score(user_choices):
 
 @pytest.mark.django_db
 def test_answers_for_questionnaire():
-    all_answers_ids = [2, 5, 10, 14, 17, 20, 23, 27, 1, 3, 4, 6, 7, 8, 9, 11,
-                       12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 26]
+    # Get all answers for the first questionnaire
     answers = [a.id for a in answers_for_questionnaire(1)]
-    common_answers = filter(lambda answr: answr in all_answers_ids, answers)
+    common_answers = Answer.objects.filter(
+        id__in=answers, question__page__questionnaire_id=1
+    )
 
     assert len(common_answers) == len(answers)
 
@@ -21,13 +24,13 @@ def test_answers_for_questionnaire():
 @pytest.mark.django_db
 def test_get_suggestions_for_better(user_choices):
     suggestions = get_suggestions_for(1, user_choices, True)
-    assert suggestions[0].id == 1
+    assert suggestions[0].answer_text == "Bogdan"
 
 
 @pytest.mark.django_db
 def test_get_suggestions_for_worse(user_choices):
     suggestions = get_suggestions_for(1, user_choices, False)
-    assert suggestions[0].id == 15
+    assert suggestions[0].answer_text == "87"
 
 
 @pytest.mark.django_db

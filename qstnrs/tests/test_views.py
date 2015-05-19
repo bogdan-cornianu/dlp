@@ -1,10 +1,11 @@
-from questionnaire.views import *
+from questionnaire.views import page, page_without_id, index, result
+from django.core.urlresolvers import reverse
 import pytest
 
 
 @pytest.mark.django_db
 def test_page(rf):
-    request = rf.get('/qstnrs/1/1/')
+    request = rf.get(reverse('qstnrs-page', args=(1, 1)))
     response = page(request, '1', '1')
 
     assert response.status_code == 200
@@ -13,7 +14,7 @@ def test_page(rf):
 
 @pytest.mark.django_db
 def test_page_without_id(rf):
-    request = rf.get('/qstnrs/1/')
+    request = rf.get(reverse('qstnrs-page-no-id', args=(1,)))
     response = page_without_id(request, '1')
 
     assert response.status_code == 302
@@ -21,7 +22,7 @@ def test_page_without_id(rf):
 
 @pytest.mark.django_db
 def test_index(rf):
-    request = rf.get('/qstnrs/')
+    request = rf.get(reverse('qstnrs-index'))
     request.session = {}
     response = index(request)
 
@@ -31,9 +32,8 @@ def test_index(rf):
 
 @pytest.mark.django_db
 def test_result(rf):
-    request = rf.get('/qstnrs/1')
+    request = rf.get(reverse('qstnrs-result', args=(1,)))
     request.session = {'choices': [2, 5, 10, 14, 17, 20, 23, 27]}
     response = result(request, '1')
 
     assert response.status_code == 200
-    assert "Your score: 7" in response.content
