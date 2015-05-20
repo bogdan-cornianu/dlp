@@ -1,4 +1,4 @@
-# poll
+# pollapp
  Followed the Django poll app tutorial from https://docs.djangoproject.com/en/1.4/intro/tutorial01/
  
 # qstnrs
