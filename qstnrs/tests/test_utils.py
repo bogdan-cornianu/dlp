@@ -1,4 +1,4 @@
-from questionnaire.utils import get_score_for, answers_for_questionnaire, \
+from questionnaire.utils import get_score_for,\
     get_suggestions_for, on_same_page
 from questionnaire.models import Answer
 import pytest
@@ -8,17 +8,6 @@ import pytest
 def test_get_score(user_choices):
     user_score = get_score_for(user_choices)
     assert user_score == 7
-
-
-@pytest.mark.django_db
-def test_answers_for_questionnaire():
-    # Get all answers for the first questionnaire
-    answers = [a.id for a in answers_for_questionnaire(1)]
-    common_answers = Answer.objects.filter(
-        id__in=answers, question__page__questionnaire_id=1
-    )
-
-    assert len(common_answers) == len(answers)
 
 
 @pytest.mark.django_db

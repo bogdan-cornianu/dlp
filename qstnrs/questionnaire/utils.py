@@ -7,15 +7,6 @@ def get_score_for(user_choices):
         'answer_score', flat=True)))
 
 
-def answers_for_questionnaire(questionnaire_id):
-    result = []
-    for answer in Answer.objects.all():
-        if answer.question.page.questionnaire_id == questionnaire_id:
-            result.append(answer)
-
-    return result
-
-
 def select_optimal_answers(user_choices, unselected_choices, better):
     """Select all the answers the user could have selected for a better or
     worse score.--add order-to-doc"""
@@ -34,7 +25,6 @@ def select_optimal_answers(user_choices, unselected_choices, better):
         elif not better and accum >= user_score:
             possible_answers.append(choice)
             accum += choice.answer_score
-
     return possible_answers
 
 
@@ -53,19 +43,14 @@ def get_suggestions_for(questionnaire_id, user_choices, better):
     number of extra answers based on the user's choices."""
 
     # Get all the answers for the current questionnaire
-    available_answers = answers_for_questionnaire(questionnaire_id)
+    available_answers = Answer.objects.filter(
+        question__page__questionnaire_id=questionnaire_id)
 
-    unselected_choices = []
-    for answer in available_answers:
-        if better:
-            if answer.answer_score > 0 and answer.id not in user_choices:
-                unselected_choices.append(answer)
-        else:
-            if answer.answer_score < 0 and answer.id not in user_choices:
-                unselected_choices.append(answer)
     if better:
-        unselected_choices.sort(key=lambda a: a.answer_score, reverse=True)
+        unselected_qs = available_answers.filter(answer_score__gt=0).exclude(
+            id__in=user_choices).order_by('-answer_score')
     else:
-        unselected_choices.sort(key=lambda a: a.answer_score)
+        unselected_qs = available_answers.filter(answer_score__lt=0).exclude(
+            id__in=user_choices).order_by('answer_score')
 
-    return select_optimal_answers(user_choices, unselected_choices, better)
+    return select_optimal_answers(user_choices, unselected_qs, better)
