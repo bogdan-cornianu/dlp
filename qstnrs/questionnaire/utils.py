@@ -7,6 +7,15 @@ def get_score_for(user_choices):
         'answer_score', flat=True)))
 
 
+def get_max_score_for(questionnaire_id):
+    """Get the maximum score the user could have obtained if he/she would have
+     chosen only the answers with a positive score"""
+    score_list = Answer.objects.filter(
+        question__page__questionnaire_id=questionnaire_id,
+        answer_score__gt=0).values_list('answer_score', flat=True)
+    return sum(score_list)
+
+
 def select_optimal_answers(user_choices, unselected_choices, better):
     """Select all the answers the user could have selected for a better or
     worse score.--add order-to-doc"""
