@@ -1,17 +1,34 @@
 import pytest
+from django.core.urlresolvers import reverse, NoReverseMatch
 
 
-def test_string_in_url(client):
-    """Test for a 404 response status code when there is a string in
-    the url."""
-    response = client.get('/qstnrs/"delete * from users;"')
-    assert response.status_code == 404
+@pytest.mark.django_db
+def test_index_string_param(client):
+    with pytest.raises(NoReverseMatch):
+        client.get(reverse('qstnrs-index', args=('a',)))
+
+
+@pytest.mark.django_db
+def test_page_noid_string_param(client):
+    with pytest.raises(NoReverseMatch):
+        client.get(reverse('qstnrs-page-no-id', args=('a',)))
+
+
+@pytest.mark.django_db
+def test_page_string_param(client):
+    with pytest.raises(NoReverseMatch):
+        client.get(reverse('qstnrs-page', args=('a',)))
+
+
+@pytest.mark.django_db
+def test_result_string_param(client):
+    with pytest.raises(NoReverseMatch):
+        client.get(reverse('qstnrs-result', args=('a',)))
 
 
 @pytest.mark.django_db
 def test_index_url(client):
-    """Test for a 200 response status code when requesting the index page."""
-    response = client.get('/qstnrs/')
+    response = client.get(reverse('qstnrs-index'))
     assert response.status_code == 200
 
 
@@ -19,7 +36,7 @@ def test_index_url(client):
 def test_page_no_questions(client):
     """Test that a correct message is displayed when there are no questions
     for a given page."""
-    response = client.get('/qstnrs/2/4/')
+    response = client.get(reverse('qstnrs-page', args=(2, 4)))
 
     assert response.status_code == 200
     assert "This page has no questions available." in response.content
