@@ -57,9 +57,9 @@ def get_suggestions_for(questionnaire_id, user_choices, better):
 
     if better:
         unselected_qs = available_answers.filter(answer_score__gt=0).exclude(
-            id__in=user_choices).order_by('-answer_score')
+            id__in=user_choices).order_by('-answer_score', 'answer_text')
     else:
         unselected_qs = available_answers.filter(answer_score__lt=0).exclude(
-            id__in=user_choices).order_by('answer_score')
+            id__in=user_choices).order_by('answer_score', 'answer_text')
 
     return select_optimal_answers(user_choices, unselected_qs, better)
