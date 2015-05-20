@@ -3,12 +3,7 @@
 {% block title %}Questionnaire Result{% endblock %}
 
 {% block extrainfo %}
-    Your score: {{ user_score }} <br>
-    {% if questionnaire %}
-        {{ questionnaire.result_description }}
-    {% else %}
-        You're score is greater than the upper limit of the questionnaire's result.
-    {% endif %}
+    Your score: {{ user_score }} out of {{ max_score }}<br>
 {% endblock %}
 
 {% block content %}
@@ -30,6 +25,6 @@
         No extra selections possible.
     {% endif %}
     <footer>
-        <a href="/qstnrs/">Back to Questionnaires list</a>
+        <a href={% url qstnrs-index %}>Back to Questionnaires list</a>
     </footer>
 {% endblock %}

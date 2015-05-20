@@ -8,7 +8,8 @@
         {% for questionnaire in questionnaires %}
             <li>
             {% if questionnaire.page_set.count > 0 %}
-                <a href="/qstnrs/{{ questionnaire.id }}/">{{ questionnaire.questionnaire_name }}</a> --- {{ questionnaire.questionnaire_description }}
+                <a href="{% url qstnrs-page-no-id questionnaire.id %}">
+                    {{ questionnaire.questionnaire_name }}</a> --- {{ questionnaire.questionnaire_description }}
             {% else %}
                 {{ questionnaire.questionnaire_name }} --- {{ questionnaire.questionnaire_description }}
             {% endif %}
