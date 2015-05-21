@@ -1,19 +1,20 @@
 from questionnaire.models import Answer
+from django.db.models import Sum
 
 
 def get_score_for(user_choices):
     """Calculate the user's total score based on selected answers."""
-    return sum(list(Answer.objects.filter(id__in=user_choices).values_list(
-        'answer_score', flat=True)))
+    return Answer.objects.filter(id__in=user_choices).aggregate(
+        total=Sum('answer_score'))['total']
 
 
 def get_max_score_for(questionnaire_id):
     """Get the maximum score the user could have obtained if he/she would have
      chosen only the answers with a positive score"""
-    score_list = Answer.objects.filter(
+    return Answer.objects.filter(
         question__page__questionnaire_id=questionnaire_id,
-        answer_score__gt=0).values_list('answer_score', flat=True)
-    return sum(score_list)
+        answer_score__gt=0).aggregate(
+        total=Sum('answer_score'))['total']
 
 
 def select_optimal_answers(user_choices, unselected_choices, better):
