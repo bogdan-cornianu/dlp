@@ -12,17 +12,17 @@
         </table>
         {% csrf_token %}
 
-        {% if previous_page_id > -1 %}
+        {% if has_previous %}
             <input type="submit" name="previousPage" value="Previous Page" />
         {% endif %}
 
-        {% if next_page_id != -1 %}
+        {% if has_next %}
             <input type="submit" name="nextPage" value="Next Page" />
         {% endif %}
-        {% if previous_page_id > -1 and next_page_id == -1 %}
+        {% if has_previous and not has_next %}
             <input type="submit" name="viewResults" value="View Results" />
         {% endif %}
-        {% if previous_page_id == -1 and next_page_id == -1 %}
+        {% if not has_previous and not has_next %}
             <footer><a href={% url qstnrs-index %}>Back to Questionnaires list</a></footer>
         {% endif %}
     </form>

@@ -92,8 +92,8 @@ def page(request, questionnaire_id, page_id):
     return render(request, "page.html", {
         "form": form,
         "page_has_questions": page_has_questions,
-        "previous_page_id": previous_page_id,
-        "next_page_id": next_page_id,
+        "has_previous": previous_page_id > -1,
+        "has_next": next_page_id > -1,
         "questionnaire_id": questionnaire_id
     })
 
