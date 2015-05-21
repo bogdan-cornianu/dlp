@@ -16,8 +16,8 @@ class PageAdmin(admin.ModelAdmin):
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('question_text', 'page', 'question_order')
-    fields = ('question_text', 'question_order', 'page')
+    list_display = ('question_text', 'page')
+    fields = ('question_text', 'page')
     search_fields = ('question_text',)
 
 

@@ -31,9 +31,9 @@ def index(request):
 
 def page_without_id(request, questionnaire_id):
     try:
-        first_page = Page.objects.filter(questionnaire_id=questionnaire_id). \
-            order_by('page_order')[0].id
-        url = reverse('qstnrs-page', args=(questionnaire_id, str(first_page)))
+        first_page = Page.objects.filter(
+            questionnaire_id=questionnaire_id)[0].id
+        url = reverse('qstnrs-page', args=(questionnaire_id, first_page))
     except IndexError:
         url = reverse('qstnrs-index')
 
@@ -42,29 +42,27 @@ def page_without_id(request, questionnaire_id):
 
 def page(request, questionnaire_id, page_id):
     try:
+        # Get current page
+        current_page = get_object_or_404(Page, id=page_id)
         # Get the list of pages
-        page_list = Page.objects.filter(
-            questionnaire_id=int(questionnaire_id)
-        ).order_by('page_order')
+        # page_list = Page.objects.filter(
+        #     questionnaire_id=int(questionnaire_id)
+        # ).order_by('page_order')
         page_has_questions = Question.objects.filter(
             page_id=int(page_id)
         ).count() > 0
 
-        current_page = get_object_or_404(page_list, id=int(page_id))
+        # current_page = get_object_or_404(page_list, id=page_id)
         # Get next page id, if there isn't one, display the View Results button
         try:
-            next_page_id = page_list.filter(
-                page_order__gt=current_page.page_order
-            )[0].id
-        except IndexError:
+            next_page_id = current_page.get_next_in_order().id
+        except Page.DoesNotExist:
             next_page_id = -1
         # Get previous page id, if there isn't one, hide the Previous Page
         # button
         try:
-            previous_page_id = page_list.filter(
-                page_order__lt=current_page.page_order
-            )[0].id
-        except IndexError:
+            previous_page_id = current_page.get_previous_in_order().id
+        except Page.DoesNotExist:
             previous_page_id = -1
 
         if request.method == 'POST':
@@ -86,7 +84,7 @@ def page(request, questionnaire_id, page_id):
                         reverse('qstnrs-result', args=(questionnaire_id,)))
                 return HttpResponseRedirect(
                     reverse('qstnrs-page',
-                            args=(questionnaire_id, str(goto_page))))
+                            args=(questionnaire_id, goto_page)))
         else:
             form = PageForm(page=current_page)
     except ValueError:

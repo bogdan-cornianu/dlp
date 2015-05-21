@@ -15,7 +15,9 @@ class Questionnaire(models.Model):
 class Page(models.Model):
     questionnaire = models.ForeignKey(Questionnaire)
     page_name = models.CharField(max_length=50)
-    page_order = models.IntegerField()
+
+    class Meta:
+        order_with_respect_to = 'questionnaire'
 
     def __unicode__(self):
         return self.page_name
@@ -24,13 +26,12 @@ class Page(models.Model):
 class Question(models.Model):
     page = models.ForeignKey(Page)
     question_text = models.CharField(max_length=250)
-    question_order = models.IntegerField()
 
     def __unicode__(self):
         return self.question_text[:100]
 
     class Meta:
-        ordering = ['question_order']
+        order_with_respect_to = 'page'
 
 
 class Answer(models.Model):
