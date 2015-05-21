@@ -7,7 +7,7 @@ unauthenticated users.
 Quick start
 -----------
 1. Install the Questionnaire egg file by running:
-    easy_install Questionnaire.egg
+    pip install Questionnaire
 
 2. Add "questionnaire" to INSTALLED_APPS in settings.py
 
