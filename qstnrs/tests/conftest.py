@@ -82,3 +82,4 @@ def unselected_choices():
     return Answer.objects.filter(question__page__questionnaire_id=1).exclude(
         answer_text__in=['Vlad', '12', 'Blue', 'Lily', 'Dogs', 'Mercedes',
                          'Pizza', 'Drunken Rat']).values_list('id', flat=True)
+
