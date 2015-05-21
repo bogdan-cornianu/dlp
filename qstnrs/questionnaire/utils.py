@@ -17,6 +17,16 @@ def get_max_score_for(questionnaire_id):
         total=Sum('answer_score'))['total']
 
 
+def on_same_page(answer, possible_choices):
+    """Check if answer is on the same page as other choices the user selected,
+    excluding answers from the same question on the same page."""
+    for choice in possible_choices:
+        if choice.question_id != answer.question_id:
+            if choice.question.page_id == answer.question.page_id:
+                return True
+    return False
+
+
 def select_optimal_answers(user_choices, unselected_choices, better):
     """Select all the answers the user could have selected for a better or
     worse score.--add order-to-doc"""
@@ -36,16 +46,6 @@ def select_optimal_answers(user_choices, unselected_choices, better):
             possible_answers.append(choice)
             accum += choice.answer_score
     return possible_answers
-
-
-def on_same_page(answer, possible_choices):
-    """Check if answer is on the same page as other choices the user selected,
-    excluding answers from the same question on the same page."""
-    for choice in possible_choices:
-        if choice.question_id != answer.question_id:
-            if choice.question.page_id == answer.question.page_id:
-                return True
-    return False
 
 
 def get_suggestions_for(questionnaire_id, user_choices, better):

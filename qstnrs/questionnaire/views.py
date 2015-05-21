@@ -41,54 +41,48 @@ def page_without_id(request, questionnaire_id):
 
 
 def page(request, questionnaire_id, page_id):
+    # Get current page
+    current_page = get_object_or_404(Page, id=page_id)
+
+    page_has_questions = Question.objects.filter(
+        page_id=page_id
+    ).count() > 0
+
+    # current_page = get_object_or_404(page_list, id=page_id)
+    # Get next page id, if there isn't one, display the View Results button
     try:
-        # Get current page
-        current_page = get_object_or_404(Page, id=page_id)
-        # Get the list of pages
-        # page_list = Page.objects.filter(
-        #     questionnaire_id=int(questionnaire_id)
-        # ).order_by('page_order')
-        page_has_questions = Question.objects.filter(
-            page_id=int(page_id)
-        ).count() > 0
+        next_page_id = current_page.get_next_in_order().id
+    except Page.DoesNotExist:
+        next_page_id = -1
+    # Get previous page id, if there isn't one, hide the Previous Page
+    # button
+    try:
+        previous_page_id = current_page.get_previous_in_order().id
+    except Page.DoesNotExist:
+        previous_page_id = -1
 
-        # current_page = get_object_or_404(page_list, id=page_id)
-        # Get next page id, if there isn't one, display the View Results button
-        try:
-            next_page_id = current_page.get_next_in_order().id
-        except Page.DoesNotExist:
-            next_page_id = -1
-        # Get previous page id, if there isn't one, hide the Previous Page
-        # button
-        try:
-            previous_page_id = current_page.get_previous_in_order().id
-        except Page.DoesNotExist:
-            previous_page_id = -1
+    if request.method == 'POST':
+        form = PageForm(request.POST, page=current_page)
+        if form.is_valid():
+            request.session.setdefault('choices', [])
+            request.session['choices'] += [
+                int(choice_id)
+                for value in form.cleaned_data.values()
+                for choice_id in value]
 
-        if request.method == 'POST':
-            form = PageForm(request.POST, page=current_page)
-            if form.is_valid():
-                if 'choices' not in request.session:
-                    request.session['choices'] = []
-                request.session['choices'] += [
-                    int(choice_id)
-                    for value in form.cleaned_data.values()
-                    for choice_id in value]
-
-                if 'previousPage' in request.POST:
-                    goto_page = previous_page_id
-                elif 'nextPage' in request.POST:
-                    goto_page = next_page_id
-                elif 'viewResults' in request.POST:
-                    return HttpResponseRedirect(
-                        reverse('qstnrs-result', args=(questionnaire_id,)))
+            if 'previousPage' in request.POST:
+                goto_page = previous_page_id
+            elif 'nextPage' in request.POST:
+                goto_page = next_page_id
+            elif 'viewResults' in request.POST:
                 return HttpResponseRedirect(
-                    reverse('qstnrs-page',
-                            args=(questionnaire_id, goto_page)))
-        else:
-            form = PageForm(page=current_page)
-    except ValueError:
-        raise Http404
+                    reverse('qstnrs-result', args=(questionnaire_id,)))
+            return HttpResponseRedirect(
+                reverse('qstnrs-page',
+                        args=(questionnaire_id, goto_page)))
+    else:
+        form = PageForm(page=current_page)
+
     return render(request, "page.html", {
         "form": form,
         "page_has_questions": page_has_questions,
@@ -103,15 +97,12 @@ def result(request, questionnaire_id):
     user_score = get_score_for(user_choices)
     max_score = get_max_score_for(questionnaire_id)
 
-    try:
-        better_suggestions = get_suggestions_for(
-            int(questionnaire_id), user_choices, better=True
-        )
-        worse_suggestions = get_suggestions_for(
-            int(questionnaire_id), user_choices, better=False
-        )
-    except ValueError:
-        raise Http404
+    better_suggestions = get_suggestions_for(
+        questionnaire_id, user_choices, better=True
+    )
+    worse_suggestions = get_suggestions_for(
+        questionnaire_id, user_choices, better=False
+    )
 
     try:
         questionnaire = Questionnaire.objects.get(id=questionnaire_id)
