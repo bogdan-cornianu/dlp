@@ -8,17 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Result'
-        db.create_table('questionnaire_result', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('questionnaire', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['questionnaire.Questionnaire'])),
-            ('lower_limit', self.gf('django.db.models.fields.IntegerField')()),
-            ('upper_limit', self.gf('django.db.models.fields.IntegerField')()),
-        ))
-        db.send_create_signal('questionnaire', ['Result'])
-
-
         # Changing field 'Questionnaire.result_upper_limit'
         db.alter_column('questionnaire_questionnaire', 'result_upper_limit', self.gf('django.db.models.fields.IntegerField')(null=True))
 
@@ -26,10 +15,6 @@ class Migration(SchemaMigration):
         db.alter_column('questionnaire_questionnaire', 'result_description', self.gf('django.db.models.fields.TextField')(max_length=500, null=True))
 
     def backwards(self, orm):
-        # Deleting model 'Result'
-        db.delete_table('questionnaire_result')
-
-
         # Changing field 'Questionnaire.result_upper_limit'
         db.alter_column('questionnaire_questionnaire', 'result_upper_limit', self.gf('django.db.models.fields.IntegerField')())
 
