@@ -1,5 +1,4 @@
 from django import forms
-from questionnaire.models import Answer
 
 
 class PageForm(forms.Form):
@@ -7,11 +6,14 @@ class PageForm(forms.Form):
         page = kwargs.pop('page')
         super(PageForm, self).__init__(*args, **kwargs)
 
-        for question in page.question_set.values('id', 'question_text'):
-            answers = Answer.objects.filter(
-                question_id=question['id']).values_list('id', 'answer_text')
+        for question in page.question_set.values(
+                'id', 'question_text', 'answer', 'answer__answer_text'):
             field_key = 'question_%s' % question['id']
-            self.fields[field_key] = forms.MultipleChoiceField(
-                choices=answers,
-                label=question['question_text']
-            )
+            if field_key in self.fields:
+                self.fields[field_key].choices.append(
+                    (question['answer'], question['answer__answer_text']))
+            else:
+                self.fields[field_key] = forms.MultipleChoiceField(
+                    choices=[(question['answer'],
+                              question['answer__answer_text'])],
+                    label=question['question_text'])
