@@ -9,11 +9,10 @@ class PageForm(forms.Form):
         for question in page.question_set.values(
                 'id', 'question_text', 'answer', 'answer__answer_text'):
             field_key = 'question_%s' % question['id']
-            if field_key in self.fields:
-                self.fields[field_key].choices.append(
-                    (question['answer'], question['answer__answer_text']))
-            else:
-                self.fields[field_key] = forms.MultipleChoiceField(
-                    choices=[(question['answer'],
-                              question['answer__answer_text'])],
-                    label=question['question_text'])
+
+            self.fields.setdefault(field_key, forms.MultipleChoiceField(
+                choices=[],
+                label=question['question_text']))
+
+            self.fields[field_key].choices.append(
+                (question['answer'], question['answer__answer_text']))
