@@ -40,33 +40,52 @@ def set_up(transactional_db):
         question_text="Where do you go for lunch?")
 
     # create answers
-    name_qstn.answer_set.create(answer_text="Vlad", answer_score=-1)
-    name_qstn.answer_set.create(answer_text="Bogdan", answer_score=10)
-    name_qstn.answer_set.create(answer_text="Ion", answer_score=2)
-    age_qstn.answer_set.create(answer_text="12", answer_score=2)
-    age_qstn.answer_set.create(answer_text="27", answer_score=10)
-    age_qstn.answer_set.create(answer_text="87", answer_score=-6)
-    colors_qstn.answer_set.create(answer_text="Blue", answer_score=-1)
-    colors_qstn.answer_set.create(answer_text="Red", answer_score=-3)
-    colors_qstn.answer_set.create(answer_text="Green", answer_score=10)
-    flowers_qstn.answer_set.create(answer_text="Lily", answer_score=-2)
-    flowers_qstn.answer_set.create(answer_text="Roses", answer_score=-3)
-    flowers_qstn.answer_set.create(answer_text="Anemone", answer_score=5)
-    flowers_qstn.answer_set.create(answer_text="Aster", answer_score=6)
-    flowers_qstn.answer_set.create(answer_text="Azalea", answer_score=3)
-    animals_qstn.answer_set.create(answer_text="Dogs", answer_score=1)
-    animals_qstn.answer_set.create(answer_text="Cats", answer_score=-4)
-    animals_qstn.answer_set.create(answer_text="Horses", answer_score=9)
-    cars_qstn.answer_set.create(answer_text="Mercedes", answer_score=3)
-    cars_qstn.answer_set.create(answer_text="BMW", answer_score=-4)
-    cars_qstn.answer_set.create(answer_text="Logan", answer_score=10)
-    cars_qstn.answer_set.create(answer_text="Lada", answer_score=-2)
-    food_qstn.answer_set.create(answer_text="Pizza", answer_score=8)
-    food_qstn.answer_set.create(answer_text="Shaorma", answer_score=5)
-    food_qstn.answer_set.create(answer_text="Burger", answer_score=-2)
-    lunch_qstn.answer_set.create(answer_text="Drunken Rat", answer_score=-3)
-    lunch_qstn.answer_set.create(answer_text="Iulius Mall", answer_score=-5)
-    lunch_qstn.answer_set.create(answer_text="The Note Pub", answer_score=8)
+    Answer.objects.bulk_create([
+        Answer(answer_text="Vlad", answer_score=-1, question=name_qstn),
+        Answer(answer_text="Bogdan", answer_score=10, question=name_qstn),
+        Answer(answer_text="Ion", answer_score=2, question=name_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(answer_text="12", answer_score=2, question=age_qstn),
+        Answer(answer_text="27", answer_score=10, question=age_qstn),
+        Answer(answer_text="87", answer_score=-6, question=age_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(answer_text="Blue", answer_score=-1, question=colors_qstn),
+        Answer(answer_text="Red", answer_score=-3, question=colors_qstn),
+        Answer(answer_text="Green", answer_score=10, question=colors_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(answer_text="Lily", answer_score=-2, question=flowers_qstn),
+        Answer(answer_text="Roses", answer_score=-3, question=flowers_qstn),
+        Answer(answer_text="Anemone", answer_score=5, question=flowers_qstn),
+        Answer(answer_text="Aster", answer_score=6, question=flowers_qstn),
+        Answer(answer_text="Azalea", answer_score=3, question=flowers_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(answer_text="Dogs", answer_score=1, question=animals_qstn),
+        Answer(answer_text="Cats", answer_score=-4, question=animals_qstn),
+        Answer(answer_text="Horses", answer_score=9, question=animals_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(answer_text="Mercedes", answer_score=3, question=cars_qstn),
+        Answer(answer_text="BMW", answer_score=-4, question=cars_qstn),
+        Answer(answer_text="Logan", answer_score=10, question=cars_qstn),
+        Answer(answer_text="Lada", answer_score=-2, question=cars_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(answer_text="Pizza", answer_score=8, question=food_qstn),
+        Answer(answer_text="Shaorma", answer_score=5, question=food_qstn),
+        Answer(answer_text="Burger", answer_score=-2, question=food_qstn)
+    ])
+    Answer.objects.bulk_create([
+        Answer(
+            answer_text="Drunken Rat", answer_score=-3, question=lunch_qstn),
+        Answer(
+            answer_text="Iulius Mall", answer_score=-5, question=lunch_qstn),
+        Answer(
+            answer_text="The Note Pub", answer_score=8, question=lunch_qstn)
+    ])
 
 
 @pytest.fixture
